@@ -1,5 +1,5 @@
 from selenium.webdriver.support.select import Select
-
+from model.Project_details import ProjectDetails
 
 class ProjectHelper:
 
@@ -35,5 +35,18 @@ class ProjectHelper:
     def count(self):
         wd = self.app.wd
         return len(wd.find_elements_by_css_selector("tr.row-1 > td > a"))
+
+    def get_project_list(self):
+        if self.project_cache is None:
+            wd = self.app.wd
+            wd.find_element_by_link_text("Manage").click()
+            wd.find_element_by_link_text("Manage Projects").click()
+            self.project_cache = []
+            for row in wd.find_elements_by_tag_name("tr"):
+                cell = row.find_elements_by_xpath("//*[@id='content']/div[2]/table/tbody/tr/td")
+                text_projectname = cell[0].text
+                text_description = cell[4].text
+                self.project_cache.append(ProjectDetails(name=text_projectname, description=text_description))
+        return list(self.project_cache)
 
 
